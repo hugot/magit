@@ -40,24 +40,31 @@ Ignored for Git versions before v2.8.0."
 
 ;;; Commands
 
-;;;###autoload (autoload 'magit-fetch-popup "magit-fetch" nil t)
-(magit-define-popup magit-fetch-popup
-  "Popup console for fetch commands."
+;;;###autoload (autoload 'magit-fetch "magit-fetch" nil t)
+(define-transient-command magit-fetch ()
+  ""
   :man-page "git-fetch"
-  :switches '((?p "Prune deleted branches" "--prune"))
-  :actions  '("Configure"
-              (?C "variables..."           magit-branch-configure)
-              "Fetch from"
-              (?p magit-get-push-remote    magit-fetch-from-pushremote)
-              (?u magit-get-remote         magit-fetch-from-upstream)
-              (?e "elsewhere"              magit-fetch-other)
-              (?a "all remotes"            magit-fetch-all)
-              "Fetch"
-              (?o "another branch"         magit-fetch-branch)
-              (?r "explicit refspec"       magit-fetch-refspec)
-              (?m "submodules"             magit-fetch-modules))
-  :default-action 'magit-fetch
-  :max-action-columns 1)
+  ["Switches"
+   ("-p" "Prune deleted branches" "--prune")]
+  ["Configure"
+   ("C" "variables..." magit-branch-configure)]
+  ["Fetch from"
+   ("p"
+    (lambda ()
+      (and-let* ((remote (magit-get-push-remote)))
+        (propertize remote 'face 'magit-branch-remote)))
+    magit-fetch-from-pushremote)
+   ("u"
+    (lambda ()
+      (and-let* ((remote (magit-get-remote)))
+        (propertize remote 'face 'magit-branch-remote)))
+    magit-fetch-from-upstream)
+   ("e" "elsewhere"        magit-fetch-other)
+   ("a" "all remotes"      magit-fetch-all)]
+  ["Fetch"
+   ("o" "another branch"   magit-fetch-branch)
+   ("r" "explicit refspec" magit-fetch-refspec)
+   ("m" "submodules"       magit-fetch-modules)])
 
 (defun magit-git-fetch (remote args)
   (run-hooks 'magit-credential-hook)
@@ -66,7 +73,7 @@ Ignored for Git versions before v2.8.0."
 ;;;###autoload
 (defun magit-fetch-from-pushremote (args)
   "Fetch from the push-remote of the current branch."
-  (interactive (list (magit-fetch-arguments)))
+  (interactive (list (transient-args 'magit-fetch)))
   (--if-let (magit-get-push-remote)
       (magit-git-fetch it args)
     (--if-let (magit-get-current-branch)
@@ -76,7 +83,7 @@ Ignored for Git versions before v2.8.0."
 ;;;###autoload
 (defun magit-fetch-from-upstream (args)
   "Fetch from the upstream repository of the current branch."
-  (interactive (list (magit-fetch-arguments)))
+  (interactive (list (transient-args 'magit-fetch)))
   (--if-let (magit-get-remote)
       (magit-git-fetch it args)
     (--if-let (magit-get-current-branch)
@@ -87,7 +94,7 @@ Ignored for Git versions before v2.8.0."
 (defun magit-fetch-other (remote args)
   "Fetch from another repository."
   (interactive (list (magit-read-remote "Fetch remote")
-                     (magit-fetch-arguments)))
+                     (transient-args 'magit-fetch)))
   (magit-git-fetch remote args))
 
 ;;;###autoload
@@ -97,7 +104,7 @@ Ignored for Git versions before v2.8.0."
    (let ((remote (magit-read-remote-or-url "Fetch from remote or url")))
      (list remote
            (magit-read-remote-branch "Fetch branch" remote)
-           (magit-fetch-arguments))))
+           (transient-args 'magit-fetch))))
   (magit-git-fetch remote (cons branch args)))
 
 ;;;###autoload
@@ -107,13 +114,13 @@ Ignored for Git versions before v2.8.0."
    (let ((remote (magit-read-remote-or-url "Fetch from remote or url")))
      (list remote
            (magit-read-refspec "Fetch using refspec" remote)
-           (magit-fetch-arguments))))
+           (transient-args 'magit-fetch))))
   (magit-git-fetch remote (cons refspec args)))
 
 ;;;###autoload
 (defun magit-fetch-all (args)
   "Fetch from all remotes."
-  (interactive (list (cl-intersection (magit-fetch-arguments)
+  (interactive (list (cl-intersection (transient-args 'magit-fetch)
                                       (list "--verbose" "--prune")
                                       :test #'equal)))
   (run-hooks 'magit-credential-hook)
