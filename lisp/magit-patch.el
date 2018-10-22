@@ -29,20 +29,6 @@
 
 (require 'magit)
 
-;;; Options
-
-(defcustom magit-patch-save-arguments '(exclude "--stat")
-  "Arguments used by `magit-patch-save-arguments' (which see)"
-  :package-version '(magit . "2.12.0")
-  :group 'magit-diff
-  :type '(choice (const :tag "use buffer arguments" buffer)
-                 (cons :tag "use buffer arguments except"
-                       (const :format "" exclude)
-                       (repeat :format "%v%i\n"
-                               (string :tag "Argument")))
-                 (repeat :tag "use constant arguments"
-                         (string :tag "Argument"))))
-
 ;;; Commands
 
 ;;;###autoload (autoload 'magit-patch-popup "magit-patch" nil t)
@@ -138,6 +124,8 @@ is asked to pull.  START has to be reachable from that commit."
   (if (not file)
       (transient-setup 'magit-commit-absorb)
     (magit-run-git "apply" args "--" (magit-convert-filename-for-git file))))
+
+(defvar magit-patch-save-arguments nil)
 
 ;;;###autoload
 (defun magit-patch-save (file &optional arg)

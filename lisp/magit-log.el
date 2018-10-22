@@ -67,13 +67,6 @@
   :group 'magit-log
   :type 'hook)
 
-(defcustom magit-log-arguments '("-n256" "--graph" "--decorate")
-  "The log arguments used in `magit-log-mode' buffers."
-  :package-version '(magit . "2.3.0")
-  :group 'magit-git-arguments
-  :group 'magit-log
-  :type '(repeat (string :tag "Argument")))
-
 (defcustom magit-log-remove-graph-args '("--follow" "--grep" "-G" "-S" "-L")
   "The log arguments that cause the `--graph' argument to be dropped."
   :package-version '(magit . "2.3.0")
@@ -175,12 +168,6 @@ This is useful if you use really long branch names."
 
 ;;;; Select Mode
 
-(defcustom magit-log-select-arguments '("-n256" "--graph" "--decorate")
-  "The log arguments used in `magit-log-select-mode' buffers."
-  :package-version '(magit . "2.3.0")
-  :group 'magit-log
-  :type '(repeat (string :tag "Argument")))
-
 (defcustom magit-log-select-show-usage 'both
   "Whether to show usage information when selecting a commit from a log.
 The message can be shown in the `echo-area' or the `header-line', or in
@@ -261,12 +248,6 @@ AUTHOR-WIDTH has to be an integer.  When the name of the author
 
 ;;;; Reflog Mode
 
-(defcustom magit-reflog-arguments '("-n256")
-  "The log arguments used in `magit-reflog-mode' buffers."
-  :package-version '(magit . "2.3.0")
-  :group 'magit-git-arguments
-  :type '(repeat (string :tag "Argument")))
-
 (defcustom magit-reflog-margin
   (list (nth 0 magit-log-margin)
         (nth 1 magit-log-margin)
@@ -342,16 +323,13 @@ the upstream isn't ahead of the current branch) show."
   :group 'magit-status
   :type 'number)
 
-(defcustom magit-log-section-arguments '("-n256" "--decorate")
-  "The log arguments used in buffers that show other things besides logs."
-  :package-version '(magit . "2.4.0")
-  :group 'magit-git-arguments
-  :group 'magit-log
-  :group 'magit-status
-  :type '(repeat (string :tag "Argument")))
-
 ;;; Commands
 ;;;; Popups
+
+(defvar magit-log-arguments nil)
+(defvar magit-reflog-arguments nil)
+(defvar magit-log-section-arguments nil)
+(defvar magit-log-select-arguments nil)
 
 (define-transient-command magit-log ()
   ""
@@ -378,7 +356,7 @@ the upstream isn't ahead of the current branch) show."
    ("-D" "Simplify by decoration"  "--simplify-by-decoration")
    ("-f" "Follow renames when showing single-file log" "--follow")]
   ["Options"
-   ("=n" "Limit number of commits" "-n")
+   ("=n" "Limit number of commits" "-n" magit-read-number)
    ("=f" "Limit to files"          "-- " magit-read-files)
    ("=a" "Limit to author"         "--author=")
    ("=o" "Order commits by"        "++order=" magit-log-select-order)
@@ -427,11 +405,11 @@ the upstream isn't ahead of the current branch) show."
    ("-f" "Follow renames when showing single-file log" "--follow")]
   ["Options"
    :predicate (lambda () (not (eq major-mode 'magit-log-mode)))
-   ("=n" "Limit number of commits" "-n")
+   ("=n" "Limit number of commits" "-n" magit-read-number)
    ("=o" "Order commits by"        "++order=" magit-log-select-order)]
   ["Options"
    :predicate (lambda () (eq major-mode 'magit-log-mode))
-   ("=n" "Limit number of commits" "-n")
+   ("=n" "Limit number of commits" "-n" magit-read-number)
    ("=f" "Limit to files"          "-- " magit-read-files)
    ("=a" "Limit to author"         "--author=")
    ("=o" "Order commits by"        "++order=" magit-log-select-order)

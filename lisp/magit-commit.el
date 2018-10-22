@@ -37,11 +37,6 @@
 
 ;;; Options
 
-(defcustom magit-commit-arguments nil
-  "The arguments used when committing."
-  :group 'magit-git-arguments
-  :type '(repeat (string :tag "Argument")))
-
 (defcustom magit-commit-ask-to-stage 'verbose
   "Whether to ask to stage all unstaged changes when committing and nothing is staged."
   :package-version '(magit . "2.3.0")

@@ -706,9 +706,10 @@ ACTION is a member of option `magit-slow-confirm'."
 
 (defun magit-read-number (prompt &optional default)
   "Like `read-number' but DEFAULT may be a numeric string."
-  (read-number prompt (if (stringp default)
-                          (string-to-number default)
-                        default)))
+  (number-to-string
+   (read-number prompt (if (stringp default)
+                           (string-to-number default)
+                         default))))
 
 ;;; Debug Utilities
 

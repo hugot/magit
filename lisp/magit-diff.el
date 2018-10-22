@@ -70,12 +70,6 @@
   :group 'magit-diff
   :type 'hook)
 
-(defcustom magit-diff-arguments '("--stat" "--no-ext-diff")
-  "The diff arguments used in buffers whose mode derives from `magit-diff-mode'."
-  :group 'magit-git-arguments
-  :group 'magit-diff
-  :type '(repeat (string :tag "Argument")))
-
 (defcustom magit-diff-sections-hook
   '(magit-insert-diff
     magit-insert-xref-buttons)
@@ -388,17 +382,6 @@ any build."
   :group 'magit-revision
   :type 'boolean)
 
-;;;; Diff Sections
-
-(defcustom magit-diff-section-arguments '("--no-ext-diff")
-  "The diff arguments used in buffers that show other things besides diffs."
-  :group 'magit-git-arguments
-  :group 'magit-diff
-  :group 'magit-status
-  :type '(repeat (string :tag "Argument")))
-
-(put 'magit-diff-section-arguments 'permanent-local t)
-
 ;;; Faces
 
 (defface magit-diff-file-heading
@@ -599,6 +582,9 @@ and `:slant'."
 
 ;;; Commands
 ;;;; Diff popups
+
+(defvar magit-diff-arguments nil)
+(defvar magit-diff-section-arguments nil)
 
 (define-transient-command magit-diff ()
   ""
