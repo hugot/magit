@@ -42,7 +42,6 @@
 (require 'dash)
 (require 'subr-x)
 
-(require 'magit-popup)
 (require 'magit-transient)
 
 (require 'crm)
@@ -738,7 +737,6 @@ See info node `(magit)Debugging Tools' for more information."
                        "ghub"
                        "graphql"
                        "lv"
-                       "magit-popup"
                        "transient"
                        "treepy"
                        "with-editor"
